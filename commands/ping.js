@@ -6,7 +6,8 @@ module.exports = {
         .setDescription('Affiche la latence du bot'),
     
     async execute(interaction) {
-        const sent = await interaction.deferReply({ fetchReply: true });
+        const startTime = Date.now();
+        await interaction.deferReply();
         
         const embed = new EmbedBuilder()
             .setColor('#00ff00')
@@ -14,7 +15,7 @@ module.exports = {
             .addFields(
                 { 
                     name: 'Latence du Bot', 
-                    value: `\`${sent.createdTimestamp - interaction.createdTimestamp}ms\``, 
+                    value: `\`${Date.now() - startTime}ms\``, 
                     inline: true 
                 },
                 { 
