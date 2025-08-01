@@ -48,6 +48,42 @@ async function initializeDatabase() {
                 FOREIGN KEY (guild_id) REFERENCES guild_settings(guild_id) ON DELETE CASCADE
             )
         `);
+
+        // Table pour les rôles par réaction
+        await conn.query(`
+            CREATE TABLE IF NOT EXISTS reaction_roles (
+                id INT AUTO_INCREMENT PRIMARY KEY,
+                guild_id VARCHAR(20) NOT NULL,
+                message_id VARCHAR(20) NOT NULL,
+                channel_id VARCHAR(20) NOT NULL,
+                role_id VARCHAR(20) NOT NULL,
+                emoji VARCHAR(50) NOT NULL,
+                description TEXT,
+                is_active BOOLEAN DEFAULT TRUE,
+                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+                UNIQUE KEY unique_reaction (guild_id, message_id, emoji),
+                INDEX idx_guild_message (guild_id, message_id)
+            )
+        `);
+
+        // Table pour les messages de rôles par réaction
+        await conn.query(`
+            CREATE TABLE IF NOT EXISTS reaction_role_messages (
+                id INT AUTO_INCREMENT PRIMARY KEY,
+                guild_id VARCHAR(20) NOT NULL,
+                message_id VARCHAR(20) NOT NULL,
+                channel_id VARCHAR(20) NOT NULL,
+                title VARCHAR(255),
+                description TEXT,
+                color VARCHAR(7) DEFAULT '#0099ff',
+                is_active BOOLEAN DEFAULT TRUE,
+                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+                UNIQUE KEY unique_message (guild_id, message_id),
+                INDEX idx_guild (guild_id)
+            )
+        `);
         
         console.log('✅ Base de données initialisée avec succès');
         
