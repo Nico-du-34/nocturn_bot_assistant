@@ -1,181 +1,185 @@
-# 🤖 Nocturn Bot Assistant
+# Nocturn Bot Assistant
 
-Un bot Discord moderne développé en Node.js avec des commandes slash, une base de données MariaDB et une Rich Presence.
+Un bot Discord multi-fonctionnalités avec système de tickets, giveaways, messages automatiques et dashboard web.
 
-## ✨ Fonctionnalités
+## 🚀 Fonctionnalités
 
-- **Commandes Slash** : Interface moderne avec Discord
-- **Base de données MariaDB** : Stockage persistant des données
-- **Rich Presence** : Statut personnalisé du bot
-- **Chargement automatique** : Les commandes se chargent automatiquement
-- **Système d'aide intégré** : Commande `/help` qui liste toutes les commandes
-- **Gestion d'erreurs** : Gestion robuste des erreurs
-- **Architecture modulaire** : Code bien organisé et extensible
+### 🎫 Système de Tickets
+- Panel de création de tickets en embed
+- Système de catégories (Support, Bug, Suggestion)
+- Gestion des permissions par rôle
+- Système de transcriptions
 
-## 🚀 Installation
+### 🎉 Système de Giveaway
+- Création de giveaways avec embed
+- Système de participation automatique
+- Gestion des conditions de participation
+- Notifications automatiques
 
-### Prérequis
+### 👋 Messages de Bienvenue/Aurevoir
+- Messages personnalisables par serveur
+- Embeds avec images de profil
+- Système de compteur de membres
 
-- Node.js (version 16 ou supérieure)
-- MariaDB/MySQL
-- Un bot Discord (créé sur le [Portail Développeur Discord](https://discord.com/developers/applications))
+### 📝 Messages Embed
+- Commandes pour créer des embeds personnalisés
+- Templates prédéfinis
+- Système de sauvegarde
 
-### Étapes d'installation
+### ⚙️ Configuration Multi-Serveur
+- Prefix configurable par serveur
+- Paramètres personnalisables
+- Système de permissions avancé
+
+### 🌐 Dashboard Web
+- Interface web pour la gestion
+- Statistiques en temps réel
+- Configuration des paramètres
+- Gestion des tickets
+
+## 📋 Prérequis
+
+- Node.js 16.0.0 ou supérieur
+- Discord Bot Token
+- Base de données MariaDB (optionnel pour le développement)
+
+## 🛠️ Installation
 
 1. **Cloner le repository**
-   ```bash
-   git clone <votre-repo>
-   cd nocturn_bot_assistant
-   ```
+```bash
+git clone <repository-url>
+cd nocturn-bot-assistant
+```
 
 2. **Installer les dépendances**
-   ```bash
-   npm install
-   ```
-
-3. **Configuration de la base de données**
-   - Créez une base de données MariaDB
-   - Notez les informations de connexion
-
-4. **Configuration des variables d'environnement**
-   ```bash
-   cp config.env.example .env
-   ```
-   
-   Éditez le fichier `.env` avec vos informations :
-   ```env
-   # Configuration Discord
-   DISCORD_TOKEN=votre_token_discord_ici
-   CLIENT_ID=votre_client_id_ici
-
-   # Configuration MariaDB
-   DB_HOST=localhost
-   DB_PORT=3306
-   DB_USER=root
-   DB_PASSWORD=votre_mot_de_passe
-   DB_NAME=nocturn_bot
-   ```
-
-5. **Déployer les commandes slash**
-   ```bash
-   npm run deploy
-   ```
-
-6. **Lancer le bot**
-   ```bash
-   npm start
-   ```
-
-   Pour le développement avec rechargement automatique :
-   ```bash
-   npm run dev
-   ```
-
-## 📁 Structure du projet
-
-```
-nocturn_bot_assistant/
-├── commands/           # Dossier des commandes slash
-│   ├── ping.js        # Commande ping
-│   └── help.js        # Commande help
-├── database/          # Configuration base de données
-│   └── connection.js  # Connexion MariaDB
-├── index.js           # Fichier principal du bot
-├── deploy-commands.js # Script de déploiement des commandes
-├── package.json       # Dépendances et scripts
-├── config.env.example # Exemple de configuration
-└── README.md          # Documentation
+```bash
+npm install
 ```
 
-## 🎮 Commandes disponibles
-
-### `/ping`
-Affiche la latence du bot et de l'API Discord.
-
-### `/help`
-Affiche la liste de toutes les commandes disponibles avec leurs descriptions.
-
-## 🔧 Ajouter une nouvelle commande
-
-1. Créez un nouveau fichier dans le dossier `commands/`
-2. Suivez cette structure :
-
-```javascript
-const { SlashCommandBuilder } = require('discord.js');
-
-module.exports = {
-    data: new SlashCommandBuilder()
-        .setName('nomcommande')
-        .setDescription('Description de la commande'),
-    
-    async execute(interaction) {
-        // Votre code ici
-        await interaction.reply('Réponse de la commande');
-    },
-};
+3. **Configuration**
+```bash
+cp .env.example .env
+# Éditer le fichier .env avec vos paramètres
 ```
 
-3. Redéployez les commandes :
-   ```bash
-   npm run deploy
-   ```
+4. **Déployer les slash commands**
+```bash
+npm run deploy
+```
 
-## 🗄️ Base de données
+5. **Lancer le bot**
+```bash
+npm start
+# ou pour le développement
+npm run dev
+```
 
-Le bot utilise MariaDB pour stocker :
-- **guild_settings** : Paramètres des serveurs
-- **user_stats** : Statistiques des utilisateurs
+## ⚙️ Configuration
 
-La base de données s'initialise automatiquement au premier démarrage.
+### Variables d'environnement (.env)
+```env
+# Bot Configuration
+BOT_TOKEN=your_discord_bot_token
+CLIENT_ID=your_client_id
+GUILD_ID=your_guild_id
 
-## 🎨 Rich Presence
+# Database
+DATABASE_URL=mysql://user:password@localhost:3306/nocturn_bot
+# ou pour SQLite (développement)
+DATABASE_TYPE=sqlite
+DATABASE_PATH=./database.db
 
-Le bot affiche une Rich Presence personnalisée avec :
-- Statut "Joue à /help pour voir les commandes"
-- Statut en ligne
+# Dashboard
+DASHBOARD_PORT=3000
+DASHBOARD_SECRET=your_dashboard_secret
+DASHBOARD_CALLBACK_URL=http://localhost:3000/api/auth/callback
 
-## 🛠️ Scripts disponibles
+# Webhook (optionnel)
+WEBHOOK_URL=your_webhook_url
+```
 
-- `npm start` : Lance le bot en production
-- `npm run dev` : Lance le bot en mode développement avec nodemon
-- `npm run deploy` : Déploie les commandes slash sur Discord
+## 📁 Structure du Projet
 
-## 🔒 Sécurité
+```
+nocturn-bot-assistant/
+├── src/
+│   ├── commands/           # Commandes slash
+│   ├── events/            # Événements Discord
+│   ├── handlers/          # Gestionnaires
+│   ├── database/          # Base de données
+│   ├── dashboard/         # Dashboard web
+│   ├── utils/             # Utilitaires
+│   └── index.js           # Point d'entrée
+├── docs/                  # Documentation
+├── database.db           # Base SQLite (développement)
+└── package.json
+```
 
-- Ne partagez jamais votre token Discord
-- Utilisez des variables d'environnement pour les informations sensibles
-- Gardez vos dépendances à jour
+## 🎮 Commandes Disponibles
+
+### Générales
+- `/help` - Affiche la liste des commandes
+- `/ping` - Test de latence
+- `/info` - Informations sur le serveur
+
+### Tickets
+- `/ticket setup` - Configure le système de tickets
+- `/ticket create` - Crée un ticket
+- `/ticket close` - Ferme un ticket
+
+### Giveaways
+- `/giveaway create` - Crée un giveaway
+- `/giveaway end` - Termine un giveaway
+- `/giveaway list` - Liste les giveaways actifs
+
+### Configuration
+- `/config prefix` - Change le prefix du serveur
+- `/config welcome` - Configure les messages de bienvenue
+- `/config goodbye` - Configure les messages d'aurevoir
+
+## 🔧 Développement
+
+### Ajouter une nouvelle commande
+1. Créer un fichier dans `src/commands/`
+2. Suivre la structure des commandes existantes
+3. Ajouter la documentation dans `docs/`
+
+### Ajouter un nouvel événement
+1. Créer un fichier dans `src/events/`
+2. Suivre la structure des événements existants
+
+## 📚 Documentation
+
+La documentation complète se trouve dans le dossier `docs/` :
+- [Guide d'installation](docs/installation.md)
+- [Configuration](docs/configuration.md)
+- [API Reference](docs/api.md)
+- [Troubleshooting](docs/troubleshooting.md)
 
 ## 🤝 Contribution
 
 1. Fork le projet
-2. Créez une branche pour votre fonctionnalité
-3. Committez vos changements
-4. Poussez vers la branche
-5. Ouvrez une Pull Request
+2. Créer une branche pour votre fonctionnalité
+3. Commit vos changements
+4. Push vers la branche
+5. Ouvrir une Pull Request
 
-## 📝 Licence
+## 📄 Licence
 
-Ce projet est sous licence ISC.
+Ce projet est sous licence MIT. Voir le fichier [LICENSE](LICENSE) pour plus de détails.
 
 ## 🆘 Support
 
-Si vous rencontrez des problèmes :
-1. Vérifiez que toutes les dépendances sont installées
-2. Vérifiez votre configuration dans le fichier `.env`
-3. Assurez-vous que MariaDB est en cours d'exécution
-4. Vérifiez les logs du bot pour les erreurs
+- **Discord** : [Serveur de support](https://discord.gg/your-server)
+- **Email** : support@nocturn-bot.com
+- **Issues** : [GitHub Issues](https://github.com/your-repo/issues)
 
-## 🔄 Mise à jour
+## 🔄 Changelog
 
-Pour mettre à jour le bot :
-```bash
-git pull
-npm install
-npm run deploy
-npm start
-```
-
----
-
-**Développé avec ❤️ par Nocturn Bot Assistant** 
+### v1.0.0
+- Système de tickets complet
+- Système de giveaways
+- Messages de bienvenue/aurevoir
+- Dashboard web
+- Configuration multi-serveur
+- Base de données SQLite/MariaDB 

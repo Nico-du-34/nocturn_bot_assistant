@@ -1,22 +1,41 @@
 {
-  "name": "nocturn_bot_assistant",
+  "name": "nocturn-bot-assistant",
   "version": "1.0.0",
-  "description": "Bot Discord avec slash commands et base de données MariaDB",
-  "main": "index.js",
+  "description": "Bot Discord multi-fonctionnalités avec système de tickets, giveaways, et dashboard",
+  "main": "src/index.js",
   "scripts": {
-    "start": "node index.js",
-    "dev": "nodemon index.js",
-    "deploy": "node deploy-commands.js"
+    "start": "node src/index.js",
+    "dev": "nodemon src/index.js",
+    "deploy": "node src/deploy-commands.js"
   },
-  "keywords": ["discord", "bot", "slash-commands", "mariadb"],
+  "keywords": [
+    "discord",
+    "bot",
+    "tickets",
+    "giveaway",
+    "dashboard"
+  ],
   "author": "Nocturn Bot Assistant",
-  "license": "ISC",
+  "license": "MIT",
   "dependencies": {
     "discord.js": "^14.14.1",
+    "discord-dashboard": "^3.0.0",
+    "sqlite3": "^5.1.6",
     "mariadb": "^3.2.3",
-    "dotenv": "^16.3.1"
+    "dotenv": "^16.3.1",
+    "express": "^4.18.2",
+    "express-session": "^1.17.3",
+    "passport": "^0.6.0",
+    "passport-discord": "^0.1.4",
+    "moment": "^2.29.4",
+    "node-cron": "^3.0.3",
+    "canvas": "^2.11.2",
+    "uuid": "^9.0.1"
   },
   "devDependencies": {
     "nodemon": "^3.0.2"
+  },
+  "engines": {
+    "node": ">=16.0.0"
   }
-}
+} 
