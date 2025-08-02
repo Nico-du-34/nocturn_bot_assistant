@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nocturn Bot - Dashboard</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #f5f5f5;
+            color: #333;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        .logo {
+            font-size: 1.5rem;
+            font-weight: bold;
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            border: 2px solid white;
+        }
+
+        .logout-btn {
+            background: rgba(255,255,255,0.2);
+            color: white;
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: 5px;
+            cursor: pointer;
+            text-decoration: none;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        .guilds-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .guild-card {
+            background: white;
+            border-radius: 10px;
+            padding: 1.5rem;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            transition: transform 0.3s ease;
+            cursor: pointer;
+        }
+
+        .guild-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .guild-header {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .guild-icon {
+            width: 60px;
+            height: 60px;
+            border-radius: 10px;
+            background: #ddd;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            font-weight: bold;
+        }
+
+        .guild-info h3 {
+            margin-bottom: 0.5rem;
+        }
+
+        .guild-stats {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+
+        .stat {
+            text-align: center;
+            padding: 0.5rem;
+            background: #f8f9fa;
+            border-radius: 5px;
+        }
+
+        .stat-value {
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: #667eea;
+        }
+
+        .stat-label {
+            font-size: 0.8rem;
+            color: #666;
+        }
+
+        .stats-overview {
+            background: white;
+            border-radius: 10px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 2rem;
+        }
+
+        .stat-card {
+            text-align: center;
+            padding: 1.5rem;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            border-radius: 10px;
+        }
+
+        .stat-card h3 {
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .no-guilds {
+            text-align: center;
+            padding: 3rem;
+            color: #666;
+        }
+
+        .no-guilds h2 {
+            margin-bottom: 1rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div class="logo">Nocturn Bot Dashboard</div>
+        <div class="user-info">
+            <img src="<%= user.avatar %>" alt="Avatar" class="user-avatar">
+            <span><%= user.username %></span>
+            <a href="/logout" class="logout-btn">Déconnexion</a>
+        </div>
+    </div>
+
+    <div class="container">
+        <div class="stats-overview">
+            <h2>Statistiques Globales</h2>
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <h3 id="totalGuilds">-</h3>
+                    <p>Serveurs</p>
+                </div>
+                <div class="stat-card">
+                    <h3 id="totalUsers">-</h3>
+                    <p>Utilisateurs</p>
+                </div>
+                <div class="stat-card">
+                    <h3 id="uptime">-</h3>
+                    <p>Temps de fonctionnement</p>
+                </div>
+                <div class="stat-card">
+                    <h3 id="ping">-</h3>
+                    <p>Latence (ms)</p>
+                </div>
+            </div>
+        </div>
+
+        <% if (guilds && guilds.length > 0) { %>
+            <h2>Vos Serveurs</h2>
+            <div class="guilds-grid">
+                <% guilds.forEach(guild => { %>
+                    <div class="guild-card" onclick="selectGuild('<%= guild.id %>')">
+                        <div class="guild-header">
+                            <% if (guild.icon) { %>
+                                <img src="https://cdn.discordapp.com/icons/<%= guild.id %>/<%= guild.icon %>.png" 
+                                     alt="<%= guild.name %>" class="guild-icon">
+                            <% } else { %>
+                                <div class="guild-icon"><%= guild.name.charAt(0) %></div>
+                            <% } %>
+                            <div class="guild-info">
+                                <h3><%= guild.name %></h3>
+                                <p>ID: <%= guild.id %></p>
+                            </div>
+                        </div>
+                        <div class="guild-stats">
+                            <div class="stat">
+                                <div class="stat-value" id="members-<%= guild.id %>">-</div>
+                                <div class="stat-label">Membres</div>
+                            </div>
+                            <div class="stat">
+                                <div class="stat-value" id="channels-<%= guild.id %>">-</div>
+                                <div class="stat-label">Canaux</div>
+                            </div>
+                        </div>
+                    </div>
+                <% }); %>
+            </div>
+        <% } else { %>
+            <div class="no-guilds">
+                <h2>Aucun serveur trouvé</h2>
+                <p>Vous devez avoir les permissions "Gérer le serveur" sur au moins un serveur pour voir le dashboard.</p>
+            </div>
+        <% } %>
+    </div>
+
+    <script>
+        // Charger les statistiques globales
+        async function loadStats() {
+            try {
+                const response = await fetch('/api/stats');
+                const stats = await response.json();
+                
+                document.getElementById('totalGuilds').textContent = stats.totalGuilds;
+                document.getElementById('totalUsers').textContent = stats.totalUsers;
+                document.getElementById('uptime').textContent = formatUptime(stats.uptime);
+                document.getElementById('ping').textContent = stats.ping;
+            } catch (error) {
+                console.error('Erreur lors du chargement des statistiques:', error);
+            }
+        }
+
+        // Charger les informations des serveurs
+        async function loadGuildInfo(guildId) {
+            try {
+                const response = await fetch(`/api/guild/${guildId}`);
+                const guild = await response.json();
+                
+                document.getElementById(`members-${guildId}`).textContent = guild.memberCount;
+                document.getElementById(`channels-${guildId}`).textContent = guild.channels;
+            } catch (error) {
+                console.error('Erreur lors du chargement des infos du serveur:', error);
+            }
+        }
+
+        // Sélectionner un serveur
+        function selectGuild(guildId) {
+            // Ici vous pouvez rediriger vers une page de gestion spécifique
+            alert(`Gestion du serveur ${guildId} - Fonctionnalité à implémenter`);
+        }
+
+        // Formater le temps de fonctionnement
+        function formatUptime(ms) {
+            const seconds = Math.floor(ms / 1000);
+            const minutes = Math.floor(seconds / 60);
+            const hours = Math.floor(minutes / 60);
+            const days = Math.floor(hours / 24);
+
+            if (days > 0) return `${days}j ${hours % 24}h`;
+            if (hours > 0) return `${hours}h ${minutes % 60}m`;
+            if (minutes > 0) return `${minutes}m ${seconds % 60}s`;
+            return `${seconds}s`;
+        }
+
+        // Charger les données au chargement de la page
+        document.addEventListener('DOMContentLoaded', () => {
+            loadStats();
+            
+            // Charger les infos de chaque serveur
+            <% if (guilds) { %>
+                <% guilds.forEach(guild => { %>
+                    loadGuildInfo('<%= guild.id %>');
+                <% }); %>
+            <% } %>
+        });
+
+        // Actualiser les statistiques toutes les 30 secondes
+        setInterval(loadStats, 30000);
+    </script>
+</body>
+</html> 

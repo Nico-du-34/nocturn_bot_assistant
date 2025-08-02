@@ -78,7 +78,7 @@ class Dashboard {
             res.render('dashboard', {
                 user: req.user,
                 guilds: req.user.guilds.filter(guild => 
-                    guild.permissions.includes('MANAGE_GUILD')
+                    guild.permissions && guild.permissions.includes('MANAGE_GUILD')
                 )
             });
         });
