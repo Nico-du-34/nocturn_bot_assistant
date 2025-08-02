@@ -79,8 +79,9 @@ class Database {
                 goodbye_message TEXT,
                 ticket_category VARCHAR(20),
                 ticket_log_channel VARCHAR(20),
+                ticket_role VARCHAR(20),
                 created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-                updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+                updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
             )`,
 
             // Table des tickets
@@ -93,8 +94,7 @@ class Database {
                 status VARCHAR(20) DEFAULT 'open',
                 created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
                 closed_at TIMESTAMP,
-                closed_by VARCHAR(20),
-                FOREIGN KEY (guild_id) REFERENCES guilds(id) ON DELETE CASCADE
+                closed_by VARCHAR(20)
             )`,
 
             // Table des giveaways
@@ -118,7 +118,6 @@ class Database {
                 giveaway_id INTEGER NOT NULL,
                 user_id VARCHAR(20) NOT NULL,
                 joined_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-                FOREIGN KEY (giveaway_id) REFERENCES giveaways(id) ON DELETE CASCADE,
                 UNIQUE(giveaway_id, user_id)
             )`,
 

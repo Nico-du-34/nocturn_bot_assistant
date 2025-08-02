@@ -4,21 +4,39 @@ const path = require('path');
 require('dotenv').config();
 
 const commands = [];
-const commandsPath = path.join(__dirname, 'commands');
-const commandFiles = fs.readdirSync(commandsPath).filter(file => file.endsWith('.js'));
 
-// Charger toutes les commandes
-for (const file of commandFiles) {
-    const filePath = path.join(commandsPath, file);
-    const command = require(filePath);
+// Fonction pour charger récursivement toutes les commandes
+function loadCommands(dir) {
+    const items = fs.readdirSync(dir);
     
-    if ('data' in command && 'execute' in command) {
-        commands.push(command.data.toJSON());
-        console.log(`✅ Commande chargée: ${command.data.name}`);
-    } else {
-        console.log(`⚠️  Commande ignorée: ${filePath} - manque de propriétés requises`);
+    for (const item of items) {
+        const fullPath = path.join(dir, item);
+        const stat = fs.statSync(fullPath);
+        
+        if (stat.isDirectory()) {
+            // Récursivement charger les sous-dossiers
+            loadCommands(fullPath);
+        } else if (item.endsWith('.js')) {
+            // Charger le fichier de commande
+            try {
+                const command = require(fullPath);
+                
+                if ('data' in command && 'execute' in command) {
+                    commands.push(command.data.toJSON());
+                    console.log(`✅ Commande chargée: ${command.data.name}`);
+                } else {
+                    console.log(`⚠️  Commande ignorée: ${fullPath} - manque de propriétés requises`);
+                }
+            } catch (error) {
+                console.error(`❌ Erreur lors du chargement de ${fullPath}:`, error.message);
+            }
+        }
     }
 }
+
+// Charger toutes les commandes depuis le dossier commands
+const commandsPath = path.join(__dirname, 'commands');
+loadCommands(commandsPath);
 
 // Configuration du REST
 const rest = new REST().setToken(process.env.BOT_TOKEN);

@@ -11,12 +11,15 @@ module.exports = {
         // Initialiser les serveurs dans la base de données
         const { getCommandsByCategory } = require('../handlers/commandHandler');
         
-        for (const guild of client.guilds.cache.values()) {
-            try {
-                await client.database.createGuild(guild.id, guild.name);
-                console.log(`✅ Serveur ajouté à la base de données: ${guild.name}`);
-            } catch (error) {
-                console.error(`❌ Erreur lors de l'ajout du serveur ${guild.name}:`, error);
+        // Vérifier si la base de données est disponible
+        if (client.database) {
+            for (const guild of client.guilds.cache.values()) {
+                try {
+                    await client.database.createGuild(guild.id, guild.name);
+                    console.log(`✅ Serveur ajouté à la base de données: ${guild.name}`);
+                } catch (error) {
+                    console.error(`❌ Erreur lors de l'ajout du serveur ${guild.name}:`, error);
+                }
             }
         }
 
