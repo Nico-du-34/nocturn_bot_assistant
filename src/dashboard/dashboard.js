@@ -141,7 +141,7 @@ class Dashboard {
                 const guild = this.client.guilds.cache.get(guildId);
                 
                 if (!guild) {
-                    return res.status(404).json({ error: 'Serveur non trouvé' });
+                    return res.status(404).json({ error: 'Bot non présent sur ce serveur' });
                 }
 
                 // Vérifier les permissions

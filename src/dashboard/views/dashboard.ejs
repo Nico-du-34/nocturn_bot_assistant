@@ -165,13 +165,33 @@
         .no-guilds h2 {
             margin-bottom: 1rem;
         }
+
+        .invite-section {
+            margin-top: 1rem;
+            text-align: center;
+        }
+
+        .invite-btn {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: transform 0.2s ease;
+        }
+
+        .invite-btn:hover {
+            transform: scale(1.05);
+        }
     </style>
 </head>
 <body>
     <div class="header">
         <div class="logo">Nocturn Bot Dashboard</div>
         <div class="user-info">
-            <img src="<%= user.avatar %>" alt="Avatar" class="user-avatar">
+            <img src="https://cdn.discordapp.com/avatars/<%= user.id %>/<%= user.avatar %>.png" alt="Avatar" class="user-avatar">
             <span><%= user.username %></span>
             <a href="/logout" class="logout-btn">Déconnexion</a>
         </div>
@@ -217,7 +237,7 @@
                                 <p>ID: <%= guild.id %></p>
                             </div>
                         </div>
-                        <div class="guild-stats">
+                        <div class="guild-stats" id="stats-<%= guild.id %>">
                             <div class="stat">
                                 <div class="stat-value" id="members-<%= guild.id %>">-</div>
                                 <div class="stat-label">Membres</div>
@@ -226,6 +246,11 @@
                                 <div class="stat-value" id="channels-<%= guild.id %>">-</div>
                                 <div class="stat-label">Canaux</div>
                             </div>
+                        </div>
+                        <div class="invite-section" id="invite-<%= guild.id %>" style="display: none;">
+                            <button class="invite-btn" onclick="inviteBot('<%= guild.id %>')">
+                                🤖 Inviter le Bot
+                            </button>
                         </div>
                     </div>
                 <% }); %>
@@ -260,11 +285,33 @@
                 const response = await fetch(`/api/guild/${guildId}`);
                 const guild = await response.json();
                 
-                document.getElementById(`members-${guildId}`).textContent = guild.memberCount;
-                document.getElementById(`channels-${guildId}`).textContent = guild.channels;
+                if (guild.error) {
+                    // Bot non présent sur le serveur
+                    document.getElementById(`stats-${guildId}`).style.display = 'none';
+                    document.getElementById(`invite-${guildId}`).style.display = 'block';
+                } else {
+                    // Bot présent sur le serveur
+                    document.getElementById(`members-${guildId}`).textContent = guild.memberCount;
+                    document.getElementById(`channels-${guildId}`).textContent = guild.channels;
+                    document.getElementById(`stats-${guildId}`).style.display = 'grid';
+                    document.getElementById(`invite-${guildId}`).style.display = 'none';
+                }
             } catch (error) {
                 console.error('Erreur lors du chargement des infos du serveur:', error);
+                // En cas d'erreur, afficher le bouton d'invitation
+                document.getElementById(`stats-${guildId}`).style.display = 'none';
+                document.getElementById(`invite-${guildId}`).style.display = 'block';
             }
+        }
+
+        // Fonction pour inviter le bot
+        function inviteBot(guildId) {
+            const clientId = '<%= process.env.CLIENT_ID %>';
+            const permissions = '8'; // Administrator
+            const scopes = 'bot applications.commands';
+            const inviteUrl = `https://discord.com/api/oauth2/authorize?client_id=${clientId}&permissions=${permissions}&scope=${scopes}&guild_id=${guildId}`;
+            
+            window.open(inviteUrl, '_blank');
         }
 
         // Sélectionner un serveur
