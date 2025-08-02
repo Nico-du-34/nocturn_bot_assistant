@@ -151,7 +151,18 @@ class Dashboard {
                 }
 
                 // Récupérer la configuration depuis la base de données
-                const config = await this.client.database.getGuild(guildId);
+                let config = null;
+                if (this.client.database && this.client.database.getGuild) {
+                    try {
+                        config = await this.client.database.getGuild(guildId);
+                    } catch (dbError) {
+                        console.warn('⚠️ Erreur base de données pour guild:', guildId, dbError.message);
+                        config = { prefix: '!', welcome_channel: null, welcome_message: null, goodbye_channel: null, goodbye_message: null };
+                    }
+                } else {
+                    console.warn('⚠️ Base de données non disponible');
+                    config = { prefix: '!', welcome_channel: null, welcome_message: null, goodbye_channel: null, goodbye_message: null };
+                }
 
                 res.json({
                     id: guild.id,
@@ -187,16 +198,20 @@ class Dashboard {
                 }
 
                 // Mettre à jour la configuration
-                await this.client.database.run(
-                    `UPDATE guilds SET 
-                        prefix = ?, 
-                        welcome_channel = ?, 
-                        welcome_message = ?,
-                        goodbye_channel = ?,
-                        goodbye_message = ?
-                     WHERE id = ?`,
-                    [prefix, welcomeChannel, welcomeMessage, goodbyeChannel, goodbyeMessage, guildId]
-                );
+                if (this.client.database && this.client.database.run) {
+                    await this.client.database.run(
+                        `UPDATE guilds SET 
+                            prefix = ?, 
+                            welcome_channel = ?, 
+                            welcome_message = ?,
+                            goodbye_channel = ?,
+                            goodbye_message = ?
+                         WHERE id = ?`,
+                        [prefix, welcomeChannel, welcomeMessage, goodbyeChannel, goodbyeMessage, guildId]
+                    );
+                } else {
+                    console.warn('⚠️ Base de données non disponible pour la mise à jour');
+                }
 
                 res.json({ success: true, message: 'Configuration mise à jour' });
 
@@ -228,10 +243,16 @@ class Dashboard {
         this.app.get('/api/guild/:guildId/tickets', this.isAuthenticated, async (req, res) => {
             try {
                 const guildId = req.params.guildId;
-                const tickets = await this.client.database.all(
-                    'SELECT * FROM tickets WHERE guild_id = ? ORDER BY created_at DESC LIMIT 50',
-                    [guildId]
-                );
+                let tickets = [];
+                
+                if (this.client.database && this.client.database.all) {
+                    tickets = await this.client.database.all(
+                        'SELECT * FROM tickets WHERE guild_id = ? ORDER BY created_at DESC LIMIT 50',
+                        [guildId]
+                    );
+                } else {
+                    console.warn('⚠️ Base de données non disponible pour les tickets');
+                }
 
                 res.json(tickets);
 
