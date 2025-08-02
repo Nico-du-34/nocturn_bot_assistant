@@ -49,6 +49,11 @@ module.exports = {
 function startGiveawayChecker(client) {
     setInterval(async () => {
         try {
+            // Vérifier si la base de données est disponible
+            if (!client.database) {
+                return;
+            }
+            
             const activeGiveaways = await client.database.getActiveGiveaways();
             
             for (const giveaway of activeGiveaways) {
@@ -69,6 +74,12 @@ function startGiveawayChecker(client) {
  */
 async function endGiveaway(client, giveaway) {
     try {
+        // Vérifier si la base de données est disponible
+        if (!client.database) {
+            console.error('❌ Base de données non disponible pour terminer le giveaway');
+            return;
+        }
+
         const guild = client.guilds.cache.get(giveaway.guild_id);
         if (!guild) return;
 

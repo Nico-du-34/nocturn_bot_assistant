@@ -54,9 +54,10 @@ class Dashboard {
         passport.use(new DiscordStrategy({
             clientID: process.env.CLIENT_ID,
             clientSecret: process.env.DASHBOARD_SECRET,
-            callbackURL: process.env.DASHBOARD_CALLBACK_URL || 'http://localhost:3000/auth/discord/callback',
+            callbackURL: process.env.DASHBOARD_CALLBACK_URL || 'http://localhost:3000/api/auth/callback',
             scope: ['identify', 'guilds']
         }, (accessToken, refreshToken, profile, done) => {
+            console.log('🔐 Profil Discord reçu:', profile.username);
             return done(null, profile);
         }));
 
@@ -75,11 +76,25 @@ class Dashboard {
     setupRoutes() {
         // Route d'accueil
         this.app.get('/', this.isAuthenticated, (req, res) => {
+            console.log('🔍 Utilisateur connecté:', req.user.username);
+            console.log('🔍 Serveurs disponibles:', req.user.guilds.length);
+            
+            const managedGuilds = req.user.guilds.filter(guild => {
+                // Les permissions sont retournées comme un bitfield (nombre)
+                // MANAGE_GUILD = 0x20 (32), ADMINISTRATOR = 0x8 (8)
+                const permissions = parseInt(guild.permissions);
+                const hasManageGuild = permissions && 
+                    ((permissions & 0x20) === 0x20 || (permissions & 0x8) === 0x8);
+                
+                console.log(`🔍 Serveur ${guild.name}: permissions = ${guild.permissions} (${permissions}), hasManageGuild = ${hasManageGuild}`);
+                return hasManageGuild;
+            });
+            
+            console.log('🔍 Serveurs gérés:', managedGuilds.length);
+            
             res.render('dashboard', {
                 user: req.user,
-                guilds: req.user.guilds.filter(guild => 
-                    guild.permissions && guild.permissions.includes('MANAGE_GUILD')
-                )
+                guilds: managedGuilds
             });
         });
 
@@ -92,9 +107,10 @@ class Dashboard {
         this.app.get('/auth/discord', passport.authenticate('discord'));
 
         // Callback d'authentification Discord
-        this.app.get('/auth/discord/callback', 
+        this.app.get('/api/auth/callback', 
             passport.authenticate('discord', { failureRedirect: '/login' }),
             (req, res) => {
+                console.log('✅ Authentification Discord réussie pour:', req.user?.username);
                 res.redirect('/');
             }
         );
